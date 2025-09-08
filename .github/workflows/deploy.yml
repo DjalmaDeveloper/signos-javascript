@@ -19,6 +19,7 @@ jobs:
           cp index.html publish/
           cp script.js publish/
           cp style.css publish/
+          cp -r images publish/
 
       - name: Create 404.html
         run: |
