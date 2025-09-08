@@ -1,0 +1,33 @@
+name: Deploy Static Site to Cloudflare Pages
+
+on:
+  push:
+    branches: ["develop"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Upload static files
+        run: |
+          mkdir publish
+          cp index.html publish/
+          cp script.js publish/
+          cp style.css publish/
+          cp -r images publish/
+
+      - name: Create 404.html
+        run: |
+          echo '<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;URL=/" /></head><body><h1>Redirecionando...</h1></body></html>' > publish/404.html
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: pages deploy publish --project-name=freela-s2k25
